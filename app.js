@@ -6,7 +6,25 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
+
+// require mongodb, which returns an object which has a property
+// called MongoClient which is what we want.
+// If running locally make sure your server is running. I usually have
+// to something like:
+//
+// "C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe" --dbpath ./data
+var connection = require('./connection.js');
+
+// Let's test to see if we can commect to the DB, if we can we will close it again.
+connection(function(err, dbConn) {   
+    if (err) {
+        console.log("Unable to connect to the DB " + err.msg);
+    }   
+    else {
+        console.log("Connected correctly to server.");  
+        dbConn.close();
+    }
+});
 
 var app = express();
 
@@ -23,7 +41,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
