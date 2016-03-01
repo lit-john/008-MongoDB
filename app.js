@@ -13,17 +13,22 @@ var routes = require('./routes/index');
 // to something like:
 //
 // "C:\Program Files\MongoDB\Server\3.2\bin\mongod.exe" --dbpath ./data
-var connection = require('./connection.js');
+var mongoClient = require('mongodb').MongoClient;
+
+
+// If I am running locally then use 'mongodb://localhost:27017/test' otherwise
+// look for the environment variable
+var url = process.env.CUSTOMCONNSTR_MongoDB || 'mongodb://localhost:27017/test'; 
 
 // Let's test to see if we can commect to the DB, if we can we will close it again.
-connection(function(err, dbConn) {   
-    if (err) {
-        console.log("Unable to connect to the DB " + err.msg);
-    }   
-    else {
-        console.log("Connected correctly to server.");  
-        dbConn.close();
-    }
+mongoClient.connect(url, function(err, conn) {
+        if(err){
+            console.log(err.message);
+            throw err;
+        } else {
+            console.log("Connected to DB");
+            conn.close();
+        }
 });
 
 var app = express();
